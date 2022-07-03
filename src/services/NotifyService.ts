@@ -78,7 +78,10 @@ class WebhookHandler extends NotifyService {
     const outputBoxes = outputs.filter((o: any) => o.ergoTree === ergoTree);
     const name = label || formatString(trackAddress);
 
-    if (!outputBoxes.length) return;
+    if (!outputBoxes.length) {
+      console.log('No outputBox', outputs);
+      return;
+    }
     const explorerInputs: ExplorerBox[] = [];
 
     for (const input of inputs) {
@@ -98,18 +101,24 @@ class WebhookHandler extends NotifyService {
       this.subscriber
     );
 
-    if (txDirection === Direction.inner) {
-      console.log('Inner tx');
+    if (txDirection === Direction.internal) {
+      console.log('Internal tx');
     } else if (txDirection === Direction.incoming) {
       // deposit transaction
       console.log('Incoming tx');
       const sumBox = mergeBoxes(outputBoxes);
 
       if (sumBox.value / NANO < 4000) {
-        console.log('Not exciting enough');
+        console.log('Not exciting enough', sumBox.value / NANO);
         return;
       }
 
+      console.log(
+        'Holly sh*t!!!',
+        Direction.incoming,
+        sumBox.value / NANO,
+        name
+      );
       await twitterAPI.v2.tweet(
         [
           '🐋  Whale Alert 🐋',
@@ -128,10 +137,16 @@ class WebhookHandler extends NotifyService {
       );
 
       if (sumBox.value / NANO < 4000) {
-        console.log('Not exciting enough');
+        console.log(
+          'Not exciting enough',
+          Direction.outgoing,
+          sumBox.value / NANO,
+          name
+        );
         return;
       }
 
+      console.log('Holly sh*t!!!');
       await twitterAPI.v2.tweet(
         [
           '🐋  Whale Alert 🐋',

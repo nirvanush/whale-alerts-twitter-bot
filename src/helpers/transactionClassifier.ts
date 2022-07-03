@@ -3,7 +3,7 @@ import { ExplorerBox, Subscriber } from '@/types';
 export enum Direction {
   incoming = 'incoming',
   outgoing = 'outgoing',
-  inner = 'inner',
+  internal = 'internal',
 }
 
 const exchanges: any = {
@@ -46,16 +46,16 @@ export default function transactionClassifier(
     return subscriber.ergoTree === box.ergoTree;
   });
 
-  const isInnerAddressInInputs = inputs.find((box) => {
-    return subscriber.ergoTree !== box.ergoTree && !!exchanges[box.ergoTree];
-  });
+  const hasInternalInputs = inputs.filter((box) => {
+    return exchanges[box.ergoTree] && subscriber.ergoTree !== box.ergoTree;
+  }).length;
 
-  const isInnerAddressInOutputs = outputs.find((box) => {
-    return subscriber.ergoTree !== box.ergoTree && !!exchanges[box.ergoTree];
-  });
+  const hasInternalOutputs = outputs.filter((box) => {
+    return exchanges[box.ergoTree] && subscriber.ergoTree !== box.ergoTree;
+  }).length;
 
-  if (isInnerAddressInInputs && isInnerAddressInOutputs) {
-    return Direction.inner;
+  if (hasInternalOutputs || hasInternalInputs) {
+    return Direction.internal;
   }
 
   if (isInInputs) return Direction.outgoing;

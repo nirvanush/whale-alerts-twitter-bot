@@ -10,7 +10,7 @@ module.exports = {
     '^__mocks__/(.*)$': '<rootDir>/__mocks__/$1',
   },
   clearMocks: true,
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: [
     './src/**/*.{js,ts}',
     '!src/handler.ts',
