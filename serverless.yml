@@ -1,4 +1,4 @@
-service: serverless-boilerplate
+service: whale-alerts-bot
 
 custom:
   # Our stage is based on what is passed in when running serverless
@@ -14,9 +14,9 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   memorySize: 512
-  timeout: 10
+  timeout: 15
   logRetentionInDays: 90
   logs:
     httpApi: true
