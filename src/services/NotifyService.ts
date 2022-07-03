@@ -126,7 +126,7 @@ class WebhookHandler extends NotifyService {
             sumBox.value / NANO
           } ERG was *deposited* on ${name} exchange 👀 👀 👀`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
-          '(Powered by @kaching_ergo notifications service)',
+          '(Powered by @kaching_ergo)',
         ].join('\n')
       );
     } else {
@@ -155,7 +155,7 @@ class WebhookHandler extends NotifyService {
           } ERG was *withdrawn* from ${name} exchange 👀 👀 👀`,
           ``,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
-          '(Powered by @kaching_ergo notifications service)',
+          '(Powered by @kaching_ergo)',
         ].join('\n')
       );
     }
