@@ -4,7 +4,7 @@
   "description": "Serverless framework ExpressJS TypeScript",
   "scripts": {
     "dev": "cross-env NODE_ENV=development sls offline start --stage offline",
-    "tail-log": "sls logs -f app -t --stage prod --aws-profile nftir-prod",
+    "tail-log": "sls logs -f app -t --stage prod",
     "deploy-prod": "cross-env NODE_ENV=production sls deploy --stage prod",
     "remove-prod": "sls remove --stage prod",
     "clean": "rimraf dist .webpack .serverless",
