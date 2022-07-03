@@ -94,13 +94,21 @@ class WebhookHandler extends NotifyService {
 
     const txDirection: Direction = transactionClassifier(
       explorerInputs,
+      outputs,
       this.subscriber
     );
 
-    if (txDirection === Direction.incoming) {
+    if (txDirection === Direction.inner) {
+      console.log('Inner tx');
+    } else if (txDirection === Direction.incoming) {
       // deposit transaction
+      console.log('Incoming tx');
       const sumBox = mergeBoxes(outputBoxes);
-      if (sumBox.value / NANO < 4000) return;
+
+      if (sumBox.value / NANO < 4000) {
+        console.log('Not exciting enough');
+        return;
+      }
 
       await twitterAPI.v2.tweet(
         [
@@ -114,11 +122,15 @@ class WebhookHandler extends NotifyService {
       );
     } else {
       // withdrawal transaction
+      console.log('withdrawal tx');
       const sumBox = mergeBoxes(
         outputs.filter((o) => o.ergoTree !== this.subscriber.ergoTree)
       );
 
-      if (sumBox.value / NANO < 4000) return;
+      if (sumBox.value / NANO < 4000) {
+        console.log('Not exciting enough');
+        return;
+      }
 
       await twitterAPI.v2.tweet(
         [

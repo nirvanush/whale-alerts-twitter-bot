@@ -23,9 +23,12 @@ app.post('/', async (req, res) => {
     event, // confirmed unconfirmed
   });
 
-  await service.call();
-
-  res.json({ status: 'Ok' });
+  try {
+    await service.call();
+    res.json({ status: 'Ok' });
+  } catch (e) {
+    res.json({ error: (e as Error).message });
+  }
 });
 
 app.use((_, res, _2) => {
