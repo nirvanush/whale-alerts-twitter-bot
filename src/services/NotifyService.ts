@@ -95,6 +95,11 @@ class WebhookHandler extends NotifyService {
       }
     }
 
+    if (explorerInputs.length !== inputs.length) {
+      console.log('Not all boxes fetched, can not make a decision');
+      return;
+    }
+
     const txDirection: Direction = transactionClassifier(
       explorerInputs,
       outputs,

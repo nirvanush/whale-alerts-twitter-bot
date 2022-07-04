@@ -15,6 +15,7 @@ app.get('/', (_, res) => {
 
 app.post('/', async (req, res) => {
   const { body } = req;
+  // res.json({ status: 'OK' })
 
   const { transaction, subscriber, event } = body;
   const service = new NotifyService({
