@@ -1,5 +1,7 @@
 /* eslint max-classes-per-file: 0 */ // --> OFF
+import { ERGODEX_CONTRACT_TREE } from '@/helpers/constants';
 import { mergeBoxes } from '@/helpers/mergeBoxes';
+import tokenDict from '@/helpers/tokenDict';
 import transactionClassifier, {
   Direction,
 } from '@/helpers/transactionClassifier';
@@ -64,9 +66,104 @@ export class NotifyService {
       return;
     }
 
-    const handler = new WebhookHandler(this);
+    let handler: NotifyService;
+
+    if (this.subscriber.ergoTree === ERGODEX_CONTRACT_TREE) {
+      handler = new ErgoDexHandler(this);
+    } else {
+      handler = new WebhookHandler(this);
+    }
 
     await handler.call();
+  }
+}
+
+class ErgoDexHandler extends NotifyService {
+  async call(): Promise<any> {
+    const { outputs, id, inputs } = this.transaction;
+
+    // not sure wtf is that, skip
+    if (
+      outputs.length !== 4 ||
+      inputs.length !== 2 ||
+      !inputs[1] ||
+      !outputs[1]
+    )
+      return;
+
+    let soldBox: ExplorerBox;
+    const receivedBox = outputs[1];
+    try {
+      /* eslint no-await-in-loop: 0, no-restricted-syntax: 0 */ // --> OFF
+      soldBox = await fetchBoxById(inputs[1].boxId);
+    } catch (e) {
+      console.error("can't find box", e);
+      return;
+    }
+
+    if (soldBox.assets[0]) {
+      // selling token for ERG
+      if (receivedBox.assets[0]) return;
+      const tokenData = tokenDict[soldBox.assets[0].tokenId];
+
+      if (!tokenData) return; // unknown token
+      if (tokenData.name === 'SigUSD') {
+        if (soldBox.assets[0].amount < 300) return;
+        await twitterAPI.v2.tweet(
+          [
+            `Someone has just dropped ${
+              soldBox.assets[0].amount
+            } SigUSD to buy ${receivedBox.value / NANO} ERG. Bullish!!!`,
+            `https://explorer.ergoplatform.com/en/transactions/${id}`,
+            '(Powered by @kaching_ergo)',
+          ].join('\n')
+        );
+      } else {
+        if (receivedBox.value / NANO < 120) return;
+        await twitterAPI.v2.tweet(
+          [
+            `Someone dropped his bag of ${
+              (soldBox.assets[0].amount / 10) * tokenData.decimals
+            } ${tokenData.twitter || tokenData.name} for ${
+              receivedBox.value / NANO
+            } ERG.`,
+            `https://explorer.ergoplatform.com/en/transactions/${id}`,
+            '(Powered by @kaching_ergo)',
+          ].join('\n')
+        );
+      }
+    } else {
+      // buying token with ERG
+      if (!receivedBox.assets[0]) return;
+      const tokenData = tokenDict[receivedBox.assets[0].tokenId];
+      if (!tokenData) return; // unknown token TODO: fetch;
+
+      if (tokenData.name === 'SigUSD') {
+        if (receivedBox.assets[0].amount < 300) return;
+        await twitterAPI.v2.tweet(
+          [
+            `Are we dipping again??? ${
+              receivedBox.assets[0].amount
+            } SigUSD was bought with ${soldBox.value / NANO} ERG.`,
+            `https://explorer.ergoplatform.com/en/transactions/${id}`,
+            '(Powered by @kaching_ergo)',
+          ].join('\n')
+        );
+      } else {
+        if (soldBox.value / NANO < 120) return;
+        await twitterAPI.v2.tweet(
+          [
+            `Someone has just Yolo'd into ${
+              (receivedBox.assets[0].amount / 10) * tokenData.decimals
+            } ${tokenData.twitter || tokenData.name} with ${
+              soldBox.value / NANO
+            } ERG purchase. Bullish!`,
+            `https://explorer.ergoplatform.com/en/transactions/${id}`,
+            '(Powered by @kaching_ergo)',
+          ].join('\n')
+        );
+      }
+    }
   }
 }
 
@@ -113,7 +210,7 @@ class WebhookHandler extends NotifyService {
       console.log('Incoming tx');
       const sumBox = mergeBoxes(outputBoxes);
 
-      if (sumBox.value / NANO < 4000) {
+      if (sumBox.value / NANO < 8500) {
         console.log('Not exciting enough', sumBox.value / NANO);
         return;
       }
