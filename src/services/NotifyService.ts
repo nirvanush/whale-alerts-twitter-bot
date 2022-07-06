@@ -112,11 +112,11 @@ class ErgoDexHandler extends NotifyService {
         console.log('selling sig for erg');
         await twitterAPI.v2.tweet(
           [
-            `Someone has just dropped ${
+            `Someone has just bought ${receivedBox.value / NANO} ERG with ${
               soldBox.assets[0].amount
-            } SigUSD to buy ${receivedBox.value / NANO} ERG. Bullish!!!`,
+            } SigUSD on @ErgoDex. Bullish!!!`,
             `https://explorer.ergoplatform.com/en/transactions/${id}`,
-            '(Powered by @kaching_ergo)',
+            '(Automated with @kaching_ergo)',
           ].join('\n')
         );
       } else {
@@ -127,12 +127,11 @@ class ErgoDexHandler extends NotifyService {
             soldBox.assets[0].amount / 10 ** tokenData.decimals
           } ${tokenData.twitter || tokenData.name} for ${
             receivedBox.value / NANO
-          } ERG.`,
+          } ERG on @ErgoDex`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
-          '(Powered by @kaching_ergo)',
+          '(Automated with @kaching_ergo)',
         ].join('\n');
 
-        console.log(message);
         await twitterAPI.v2.tweet(message);
       }
     } else {
@@ -147,10 +146,12 @@ class ErgoDexHandler extends NotifyService {
         await twitterAPI.v2.tweet(
           [
             `Are we dipping again??? ${
+              soldBox.value / NANO
+            } ERG was converted to ${
               receivedBox.assets[0].amount
-            } SigUSD was bought with ${soldBox.value / NANO} ERG.`,
+            } SigUSD on @ErgoDex.`,
             `https://explorer.ergoplatform.com/en/transactions/${id}`,
-            '(Powered by @kaching_ergo)',
+            '(Automated with @kaching_ergo)',
           ].join('\n')
         );
       } else {
@@ -158,13 +159,11 @@ class ErgoDexHandler extends NotifyService {
         console.log('buying token with erg');
         await twitterAPI.v2.tweet(
           [
-            `Someone has just Yolo'd into ${
-              receivedBox.assets[0].amount / 10 ** tokenData.decimals
-            } ${tokenData.twitter || tokenData.name} with ${
-              soldBox.value / NANO
-            } ERG purchase. Bullish!`,
+            `Someone has just YOLO'd in ${
+              tokenData.twitter || tokenData.name
+            } token with ${soldBox.value / NANO} ERG on @ErgoDex. Bullish!`,
             `https://explorer.ergoplatform.com/en/transactions/${id}`,
-            '(Powered by @kaching_ergo)',
+            '(Automated with @kaching_ergo)',
           ].join('\n')
         );
       }
@@ -233,7 +232,7 @@ class WebhookHandler extends NotifyService {
             sumBox.value / NANO
           } ERG was *deposited* on ${name} exchange 👀 👀 👀`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
-          '(Powered by @kaching_ergo)',
+          '(Automated with @kaching_ergo)',
         ].join('\n')
       );
     } else {
@@ -262,7 +261,7 @@ class WebhookHandler extends NotifyService {
           } ERG was *withdrawn* from ${name} exchange 👀 👀 👀`,
           ``,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
-          '(Powered by @kaching_ergo)',
+          '(Automated with @kaching_ergo)',
         ].join('\n')
       );
     }
