@@ -122,17 +122,18 @@ class ErgoDexHandler extends NotifyService {
       } else {
         if (receivedBox.value / NANO < 120) return;
         console.log('selling token for erg');
-        await twitterAPI.v2.tweet(
-          [
-            `Someone dropped his bag of ${
-              soldBox.assets[0].amount / (10 * tokenData.decimals)
-            } ${tokenData.twitter || tokenData.name} for ${
-              receivedBox.value / NANO
-            } ERG.`,
-            `https://explorer.ergoplatform.com/en/transactions/${id}`,
-            '(Powered by @kaching_ergo)',
-          ].join('\n')
-        );
+        const message = [
+          `Someone has just dropped his bag of ${
+            soldBox.assets[0].amount / 10 ** tokenData.decimals
+          } ${tokenData.twitter || tokenData.name} for ${
+            receivedBox.value / NANO
+          } ERG.`,
+          `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '(Powered by @kaching_ergo)',
+        ].join('\n');
+
+        console.log(message);
+        await twitterAPI.v2.tweet(message);
       }
     } else {
       // buying token with ERG
@@ -158,7 +159,7 @@ class ErgoDexHandler extends NotifyService {
         await twitterAPI.v2.tweet(
           [
             `Someone has just Yolo'd into ${
-              receivedBox.assets[0].amount / (10 * tokenData.decimals)
+              receivedBox.assets[0].amount / 10 ** tokenData.decimals
             } ${tokenData.twitter || tokenData.name} with ${
               soldBox.value / NANO
             } ERG purchase. Bullish!`,
