@@ -108,22 +108,23 @@ class ErgoDexHandler extends NotifyService {
 
       if (!tokenData) return; // unknown token
       if (tokenData.name === 'SigUSD') {
-        if (soldBox.assets[0].amount < 300) return;
+        if (soldBox.assets[0].amount <= 1000) return;
         console.log('selling sig for erg');
-        await twitterAPI.v2.tweet(
-          [
-            `Someone has just bought ${receivedBox.value / NANO} ERG with ${
-              soldBox.assets[0].amount
-            } SigUSD on @ErgoDex. Bullish!!!`,
-            `https://explorer.ergoplatform.com/en/transactions/${id}`,
-            '(Automated with @kaching_ergo)',
-          ].join('\n')
-        );
+        const message = [
+          `Someone has just bought ${receivedBox.value / NANO} ERG with ${
+            soldBox.assets[0].amount / 10 ** tokenData.decimals
+          } SigUSD on @ErgoDex. Bullish!!!`,
+          `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '(Automated with @kaching_ergo)',
+        ].join('\n');
+
+        console.log(message);
+        await twitterAPI.v2.tweet(message);
       } else {
-        if (receivedBox.value / NANO < 120) return;
+        if (receivedBox.value / NANO <= 1000) return;
         console.log('selling token for erg');
         const message = [
-          `Someone has just dropped his bag of ${
+          `Someone has just sold his bag of ${
             soldBox.assets[0].amount / 10 ** tokenData.decimals
           } ${tokenData.twitter || tokenData.name} for ${
             receivedBox.value / NANO
@@ -131,6 +132,7 @@ class ErgoDexHandler extends NotifyService {
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
           '(Automated with @kaching_ergo)',
         ].join('\n');
+        console.log(message);
 
         await twitterAPI.v2.tweet(message);
       }
@@ -141,31 +143,33 @@ class ErgoDexHandler extends NotifyService {
       if (!tokenData) return; // unknown token TODO: fetch;
 
       if (tokenData.name === 'SigUSD') {
-        if (receivedBox.assets[0].amount < 300) return;
+        if (receivedBox.assets[0].amount <= 1000) return;
         console.log('buying sig with erg');
-        await twitterAPI.v2.tweet(
-          [
-            `Are we dipping again??? ${
-              soldBox.value / NANO
-            } ERG was converted to ${
-              receivedBox.assets[0].amount
-            } SigUSD on @ErgoDex.`,
-            `https://explorer.ergoplatform.com/en/transactions/${id}`,
-            '(Automated with @kaching_ergo)',
-          ].join('\n')
-        );
+        const message = [
+          `Are we dipping again??? ${
+            soldBox.value / NANO
+          } ERG was converted to ${
+            receivedBox.assets[0].amount / 10 ** tokenData.decimals
+          } SigUSD on @ErgoDex.`,
+          `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '(Automated with @kaching_ergo)',
+        ].join('\n');
+
+        console.log(message);
+        await twitterAPI.v2.tweet(message);
       } else {
-        if (soldBox.value / NANO < 120) return;
+        if (soldBox.value / NANO <= 1000) return;
         console.log('buying token with erg');
-        await twitterAPI.v2.tweet(
-          [
-            `Someone has just YOLO'd in ${
-              tokenData.twitter || tokenData.name
-            } token with ${soldBox.value / NANO} ERG on @ErgoDex. Bullish!`,
-            `https://explorer.ergoplatform.com/en/transactions/${id}`,
-            '(Automated with @kaching_ergo)',
-          ].join('\n')
-        );
+        const message = [
+          `Someone has just YOLO'd in ${
+            tokenData.twitter || tokenData.name
+          } token with ${soldBox.value / NANO} ERG on @ErgoDex. Bullish!`,
+          `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '(Automated with @kaching_ergo)',
+        ].join('\n');
+
+        console.log(message);
+        await twitterAPI.v2.tweet(message);
       }
     }
   }
