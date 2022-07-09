@@ -100,15 +100,16 @@ class ErgoDexHandler extends NotifyService {
       console.error("can't find box", e);
       return;
     }
-    console.log(soldBox.assets[0]);
+
     if (soldBox.assets[0]) {
       // selling token for ERG
       if (receivedBox.assets[0]) return;
       const tokenData = tokenDict[soldBox.assets[0].tokenId];
 
       if (!tokenData) return; // unknown token
+
       if (tokenData.name === 'SigUSD') {
-        if (soldBox.assets[0].amount <= 1000) return;
+        if (soldBox.assets[0].amount / 10 ** tokenData.decimals <= 1000) return;
         console.log('selling sig for erg');
         const message = [
           `Someone has just bought ${receivedBox.value / NANO} ERG with ${
@@ -121,7 +122,7 @@ class ErgoDexHandler extends NotifyService {
         console.log(message);
         await twitterAPI.v2.tweet(message);
       } else {
-        if (receivedBox.value / NANO <= 1000) return;
+        if (receivedBox.value / NANO <= 500) return;
         console.log('selling token for erg');
         const message = [
           `Someone has just sold his bag of ${
@@ -143,7 +144,8 @@ class ErgoDexHandler extends NotifyService {
       if (!tokenData) return; // unknown token TODO: fetch;
 
       if (tokenData.name === 'SigUSD') {
-        if (receivedBox.assets[0].amount <= 1000) return;
+        if (receivedBox.assets[0].amount / 10 ** tokenData.decimals <= 1000)
+          return;
         console.log('buying sig with erg');
         const message = [
           `Are we dipping again??? ${
@@ -158,7 +160,7 @@ class ErgoDexHandler extends NotifyService {
         console.log(message);
         await twitterAPI.v2.tweet(message);
       } else {
-        if (soldBox.value / NANO <= 1000) return;
+        if (soldBox.value / NANO <= 500) return;
         console.log('buying token with erg');
         const message = [
           `Someone has just YOLO'd in ${
