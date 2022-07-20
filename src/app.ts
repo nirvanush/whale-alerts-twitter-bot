@@ -1,5 +1,10 @@
 import express, { json } from 'express';
 import helmet from 'helmet';
+import * as AWS from 'aws-sdk';
+
+const sqs = new AWS.SQS({
+  apiVersion: 'latest'
+});
 
 import { NotifyService } from './services/NotifyService';
 
@@ -28,6 +33,33 @@ app.post('/', async (req, res) => {
     await service.call();
     res.json({ status: 'Ok' });
   } catch (e) {
+    res.json({ error: (e as Error).message });
+  }
+});
+
+app.post('/enqueue', async (req, res) => {
+  const { body } = req;
+  // res.json({ status: 'OK' })
+
+  const { transaction, subscriber, event } = body;
+
+  try {
+    await sqs.sendMessage({
+      QueueUrl: 'https://sqs.us-east-1.amazonaws.com/419892788374/whale-alerts-bot-prod-purchases.fifo',
+      MessageDeduplicationId: transaction.id,
+      MessageGroupId: subscriber.userId,
+      // Any message data we want to send
+      MessageBody: JSON.stringify({
+          transaction,
+          subscriber,
+          event
+      }),
+    }).promise();
+
+    res.json({ status: 'OK'});
+
+  } catch(e) {
+    console.log(e)
     res.json({ error: (e as Error).message });
   }
 });

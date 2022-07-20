@@ -27,11 +27,23 @@ provider:
 functions:
   app:
     handler: src/handler.handler
-    # reservedConcurrency: 100
+    environment:
+      QUEUE_URL: ${construct:purchases.queueUrl}
     events:
       - httpApi:
           path: '/{proxy+}'
           method: '*'
+
+constructs:
+    purchases:
+        type: queue
+        fifo: true
+        worker:
+            handler: src/worker.handler
+        extensions:
+            queue:
+                Properties:
+                    MaximumMessageSize: 262144
 
 package:
   individually: true
@@ -40,3 +52,4 @@ plugins:
   - serverless-dotenv-plugin
   - serverless-bundle
   - serverless-offline
+  - serverless-lift
