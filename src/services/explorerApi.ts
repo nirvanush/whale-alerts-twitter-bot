@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 
 import { ExplorerBox } from '@/types';
 
-const PATH = 'https://ergo-explorer-cdn.getblok.io/api/v1';
+const PATH = 'https://api.ergoplatform.com/api/v1';
 
 async function confirmed(id: string) {
   const response = await fetch(`${PATH}/transactions/${id}`);

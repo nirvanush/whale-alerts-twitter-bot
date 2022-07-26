@@ -21,18 +21,17 @@ provider:
   logs:
     httpApi: true
   httpApi:
-    # metrics: true # Enable if you need
     cors: true
 
 functions:
   app:
     handler: src/handler.handler
-    environment:
-      QUEUE_URL: ${construct:purchases.queueUrl}
     events:
       - httpApi:
           path: '/{proxy+}'
           method: '*'
+    environment:
+      QUEUE_URL: ${construct:purchases.queueUrl}
 
 constructs:
     purchases:

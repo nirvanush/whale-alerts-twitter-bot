@@ -1,5 +1,7 @@
 import express, { json } from 'express';
 import helmet from 'helmet';
+import cors from 'cors';
+
 import * as AWS from 'aws-sdk';
 
 const sqs = new AWS.SQS({
@@ -11,6 +13,7 @@ import { NotifyService } from './services/NotifyService';
 const app = express();
 app.use(json());
 app.use(helmet());
+app.use(cors());
 
 app.get('/', (_, res) => {
   res.json({
@@ -33,6 +36,7 @@ app.post('/', async (req, res) => {
     await service.call();
     res.json({ status: 'Ok' });
   } catch (e) {
+    console.error(e);
     res.json({ error: (e as Error).message });
   }
 });

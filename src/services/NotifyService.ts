@@ -62,6 +62,7 @@ export class NotifyService {
   }
 
   async call(): Promise<any> {
+    console.log(this)
     if (this.event !== this.subscriber.triggerType) {
       return;
     }
@@ -100,7 +101,7 @@ class ErgoDexHandler extends NotifyService {
       console.error("can't find box", e);
       return;
     }
-
+    console.log({soldBox});
     if (soldBox.assets[0]) {
       // selling token for ERG
       if (receivedBox.assets[0]) return;
@@ -114,7 +115,7 @@ class ErgoDexHandler extends NotifyService {
         const message = [
           `Someone has just bought ${receivedBox.value / NANO} ERG with ${
             soldBox.assets[0].amount / 10 ** tokenData.decimals
-          } SigUSD on @ErgoDex. Bullish!!!`,
+          } SigUSD on ErgoDex. Bullish!!!`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
           '(Automated with @kaching_ergo)',
         ].join('\n');
@@ -129,7 +130,7 @@ class ErgoDexHandler extends NotifyService {
             soldBox.assets[0].amount / 10 ** tokenData.decimals
           } ${tokenData.twitter || tokenData.name} for ${
             receivedBox.value / NANO
-          } ERG on @ErgoDex`,
+          } ERG on ErgoDex`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
           '(Automated with @kaching_ergo)',
         ].join('\n');
@@ -152,7 +153,7 @@ class ErgoDexHandler extends NotifyService {
             soldBox.value / NANO
           } ERG was converted to ${
             receivedBox.assets[0].amount / 10 ** tokenData.decimals
-          } SigUSD on @ErgoDex.`,
+          } SigUSD on ErgoDex.`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
           '(Automated with @kaching_ergo)',
         ].join('\n');
@@ -165,7 +166,7 @@ class ErgoDexHandler extends NotifyService {
         const message = [
           `Someone has just YOLO'd in ${
             tokenData.twitter || tokenData.name
-          } token with ${soldBox.value / NANO} ERG on @ErgoDex. Bullish!`,
+          } token with ${soldBox.value / NANO} ERG on ErgoDex. Bullish!`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
           '(Automated with @kaching_ergo)',
         ].join('\n');
@@ -196,7 +197,9 @@ class WebhookHandler extends NotifyService {
       try {
         /* eslint no-await-in-loop: 0, no-restricted-syntax: 0 */ // --> OFF
         data = await fetchBoxById(input.boxId);
+        if (!data.assets) throw new Error('box not fetched someting went wrong')
         explorerInputs.push(data);
+
       } catch (e) {
         console.error("can't find box", e);
       }
