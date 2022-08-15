@@ -62,7 +62,7 @@ export class NotifyService {
   }
 
   async call(): Promise<any> {
-    console.log(this)
+    console.log(this);
     if (this.event !== this.subscriber.triggerType) {
       return;
     }
@@ -101,7 +101,7 @@ class ErgoDexHandler extends NotifyService {
       console.error("can't find box", e);
       return;
     }
-    console.log({soldBox});
+    console.log({ soldBox });
     if (soldBox.assets[0]) {
       // selling token for ERG
       if (receivedBox.assets[0]) return;
@@ -110,28 +110,36 @@ class ErgoDexHandler extends NotifyService {
       if (!tokenData) return; // unknown token
 
       if (tokenData.name === 'SigUSD') {
-        if (soldBox.assets[0].amount / 10 ** tokenData.decimals <= 1000) return;
+        if (soldBox.assets[0].amount / 10 ** tokenData.decimals <= 1200) return;
         console.log('selling sig for erg');
         const message = [
-          `Someone has just bought ${receivedBox.value / NANO} ERG with ${
+          `📈 1 Erg = $${(
+            receivedBox.value /
+            NANO /
+            soldBox.assets[0].amount /
+            10 ** tokenData.decimals
+          ).toFixed(2)}`,
+          `Someone has just bought ${receivedBox.value / NANO} $ERG with ${
             soldBox.assets[0].amount / 10 ** tokenData.decimals
-          } SigUSD on ErgoDex. Bullish!!!`,
+          } SigUSD on Spectrum.`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '#Ergo',
           '(Automated with @kaching_ergo)',
         ].join('\n');
 
         console.log(message);
         await twitterAPI.v2.tweet(message);
       } else {
-        if (receivedBox.value / NANO <= 500) return;
+        if (receivedBox.value / NANO <= 800) return;
         console.log('selling token for erg');
         const message = [
           `Someone has just sold his bag of ${
             soldBox.assets[0].amount / 10 ** tokenData.decimals
           } ${tokenData.twitter || tokenData.name} for ${
             receivedBox.value / NANO
-          } ERG on ErgoDex`,
+          } $ERG on Spectrum`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '#Ergo',
           '(Automated with @kaching_ergo)',
         ].join('\n');
         console.log(message);
@@ -145,29 +153,35 @@ class ErgoDexHandler extends NotifyService {
       if (!tokenData) return; // unknown token TODO: fetch;
 
       if (tokenData.name === 'SigUSD') {
-        if (receivedBox.assets[0].amount / 10 ** tokenData.decimals <= 1000)
+        if (receivedBox.assets[0].amount / 10 ** tokenData.decimals <= 1200)
           return;
         console.log('buying sig with erg');
         const message = [
-          `Are we dipping again??? ${
-            soldBox.value / NANO
-          } ERG was converted to ${
+          `🔻 1 Erg = $${(
+            soldBox.value /
+            NANO /
+            receivedBox.assets[0].amount /
+            10 ** tokenData.decimals
+          ).toFixed(2)}`,
+          `${soldBox.value / NANO} $ERG was swapped for ${
             receivedBox.assets[0].amount / 10 ** tokenData.decimals
-          } SigUSD on ErgoDex.`,
+          } SigUSD on Spectrum.`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '#Ergo',
           '(Automated with @kaching_ergo)',
         ].join('\n');
 
         console.log(message);
         await twitterAPI.v2.tweet(message);
       } else {
-        if (soldBox.value / NANO <= 500) return;
+        if (soldBox.value / NANO <= 800) return;
         console.log('buying token with erg');
         const message = [
           `Someone has just YOLO'd in ${
             tokenData.twitter || tokenData.name
-          } token with ${soldBox.value / NANO} ERG on ErgoDex. Bullish!`,
+          } token with ${soldBox.value / NANO} $ERG on Spectrum. Bullish!`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '#Ergo',
           '(Automated with @kaching_ergo)',
         ].join('\n');
 
@@ -197,9 +211,9 @@ class WebhookHandler extends NotifyService {
       try {
         /* eslint no-await-in-loop: 0, no-restricted-syntax: 0 */ // --> OFF
         data = await fetchBoxById(input.boxId);
-        if (!data.assets) throw new Error('box not fetched someting went wrong')
+        if (!data.assets)
+          throw new Error('box not fetched someting went wrong');
         explorerInputs.push(data);
-
       } catch (e) {
         console.error("can't find box", e);
       }
@@ -241,6 +255,7 @@ class WebhookHandler extends NotifyService {
             sumBox.value / NANO
           } ERG was *deposited* on ${name} exchange 👀 👀 👀`,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '#Ergo $ERG',
           '(Automated with @kaching_ergo)',
         ].join('\n')
       );
@@ -270,6 +285,7 @@ class WebhookHandler extends NotifyService {
           } ERG was *withdrawn* from ${name} exchange 👀 👀 👀`,
           ``,
           `https://explorer.ergoplatform.com/en/transactions/${id}`,
+          '#Ergo $ERG',
           '(Automated with @kaching_ergo)',
         ].join('\n')
       );
