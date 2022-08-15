@@ -101,7 +101,7 @@ class ErgoDexHandler extends NotifyService {
       console.error("can't find box", e);
       return;
     }
-    console.log({ soldBox });
+    // console.log({ soldBox });
     if (soldBox.assets[0]) {
       // selling token for ERG
       if (receivedBox.assets[0]) return;
@@ -114,10 +114,9 @@ class ErgoDexHandler extends NotifyService {
         console.log('selling sig for erg');
         const message = [
           `📈 1 Erg = $${(
-            receivedBox.value /
-            NANO /
             soldBox.assets[0].amount /
-            10 ** tokenData.decimals
+            10 ** tokenData.decimals /
+            (receivedBox.value / NANO)
           ).toFixed(2)}`,
           `Someone has just bought ${receivedBox.value / NANO} $ERG with ${
             soldBox.assets[0].amount / 10 ** tokenData.decimals
@@ -158,10 +157,9 @@ class ErgoDexHandler extends NotifyService {
         console.log('buying sig with erg');
         const message = [
           `🔻 1 Erg = $${(
-            soldBox.value /
-            NANO /
             receivedBox.assets[0].amount /
-            10 ** tokenData.decimals
+            10 ** tokenData.decimals /
+            (soldBox.value / NANO)
           ).toFixed(2)}`,
           `${soldBox.value / NANO} $ERG was swapped for ${
             receivedBox.assets[0].amount / 10 ** tokenData.decimals
@@ -201,7 +199,7 @@ class WebhookHandler extends NotifyService {
     const name = label || formatString(trackAddress);
 
     if (!outputBoxes.length) {
-      console.log('No outputBox', outputs);
+      // console.log('No outputBox', outputs);
       return;
     }
     const explorerInputs: ExplorerBox[] = [];
