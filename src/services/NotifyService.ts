@@ -132,7 +132,7 @@ class ErgoDexHandler extends NotifyService {
         if (receivedBox.value / NANO <= 800) return;
         console.log('selling token for erg');
         const message = [
-          `Someone has just sold his bag of ${
+          `Someone has just sold their bag of ${
             soldBox.assets[0].amount / 10 ** tokenData.decimals
           } ${tokenData.twitter || tokenData.name} for ${
             receivedBox.value / NANO
